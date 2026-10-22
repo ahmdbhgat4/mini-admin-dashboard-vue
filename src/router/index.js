@@ -9,9 +9,17 @@ import Reports from '@/pages/Reports.vue';
 import Settings from '@/pages/Settings.vue';
 import Users from '@/pages/Users.vue';
 import Auth from '@/pages/Auth.vue';
+import LoginForm from '@/components/LoginForm.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const routes = [
-    { path: '/auth', name: 'auth', component: Auth, meta: { requiresGuest: true } },
+    {
+        path: '/auth',
+        name: 'auth',
+        component: Auth,
+        meta: { requiresGuest: true },
+        children: [{ path: 'login', name: 'auth-login', component: LoginForm }],
+    },
     { path: '/', name: 'dashboard', component: Dashboard },
     { path: '/users', name: 'users', component: Users, meta: { requiresAdmin: true } },
     { path: '/reports', name: 'reports', component: Reports },
@@ -26,6 +34,27 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(import.meta.env.VITE_PROD_BASE_URL),
     routes,
+});
+
+router.beforeEach(to => {
+    const authStore = useAuthStore();
+
+    if (to.meta.requiresGuest) {
+        // auth pages (must be logged out)
+        if (authStore.loggedIn) {
+            return { name: 'dashboard' }; // false
+        }
+    } else if (to.meta.requiresAdmin) {
+        // admin pages only
+        if (!authStore.loggedIn) {
+            return { name: 'auth-login' };
+        } else if (authStore.user.role !== 'admin') {
+            // return { name: 'access-denied' };
+        }
+    } else if (!authStore.loggedIn) {
+        // normal auth pages (member|admin)
+        return { name: 'auth-login' };
+    }
 });
 
 export default router;

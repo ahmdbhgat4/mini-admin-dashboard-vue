@@ -1,13 +1,25 @@
 <script setup>
+import { useActivityLogStore } from '@/stores/activityLog';
+import { formatDistanceToNow } from 'date-fns';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const logStore = useActivityLogStore();
+
+const formatDate = (date = '') => {
+    return formatDistanceToNow(new Date(date));
+};
+
+onMounted(() => {
+    logStore.fetchData();
+});
 </script>
 
 <template>
     <section data-page="log">
         <div class="panel">
-            <h2 data-i18n="n_log">{{ t('n_log') }}</h2>
+            <h2>{{ t('n_log') }}</h2>
             <div class="tw">
                 <table>
                     <thead>
@@ -17,21 +29,18 @@ const { t } = useI18n();
                             <th>{{ t('when') }}</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Layla</td>
-                            <td>Changed Omar's role to Member</td>
-                            <td>40 min ago</td>
+
+                    <tbody v-if="logStore.loading">
+                        <tr v-for="i in 3" :key="i">
+                            <td v-for="j in 3" :key="j"><Skeleton width="" height="27px"></Skeleton></td>
                         </tr>
-                        <tr>
-                            <td>Layla</td>
-                            <td>Disabled Youssef's account</td>
-                            <td>Yesterday</td>
-                        </tr>
-                        <tr>
-                            <td>Amira</td>
-                            <td>Exported the user growth report</td>
-                            <td>2 days ago</td>
+                    </tbody>
+
+                    <tbody v-else>
+                        <tr v-for="obj in logStore.logs" :key="obj.id">
+                            <td>{{ obj.provider_name }}</td>
+                            <td>{{ obj.title }}</td>
+                            <td>{{ formatDate(obj.created_at) }}</td>
                         </tr>
                     </tbody>
                 </table>

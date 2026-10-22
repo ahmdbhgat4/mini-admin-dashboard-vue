@@ -2,11 +2,59 @@
 import Sidebar from '@/components/Sidebar.vue';
 import MainHeader from '@/components/MainHeader.vue';
 import MainFooter from '@/components/MainFooter.vue';
+import { onMounted, onUnmounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useNotificationsStore } from '@/stores/notifications';
+import { supabase } from '@/utils/supabase';
+import { useRouter } from 'vue-router';
+import { useGlobalStore } from '@/stores/global';
+
+const globalStore = useGlobalStore();
+const notificationsStore = useNotificationsStore();
+const authStore = useAuthStore();
+const router = useRouter();
+
+supabase.auth.onAuthStateChange(async (state = '') => {
+    authStore.refreshCredentials();
+
+    switch (state) {
+        case 'SIGNED_IN':
+            if (!notificationsStore.unsubscribe) {
+                notificationsStore.subscribe();
+            }
+            authStore.loggedIn = true;
+            if (router.currentRoute.value.name === 'auth-login') {
+                router.push({ name: 'dashboard' });
+            }
+            break;
+        case 'SIGNED_OUT':
+            notificationsStore.unsubscribe?.();
+            authStore.loggedIn = false;
+            if (router.currentRoute.value.name !== 'auth-login') {
+                router.push({ name: 'auth-login' });
+            }
+            break;
+        // case 'USER_UPDATED':
+        //     break;
+        // case 'INITIAL_SESSION':
+        //     break;
+        // default:
+        //     break;
+    }
+});
+
+onMounted(async () => {
+    globalStore.fetchData();
+});
+
+onUnmounted(() => {
+    notificationsStore.unsubscribe?.();
+});
 </script>
 
 <template>
-    <div id="shell" class="shell">
-        <Sidebar />
+    <div :class="{ shell: authStore.loggedIn }">
+        <Sidebar v-if="authStore.loggedIn" />
 
         <div>
             <MainHeader />

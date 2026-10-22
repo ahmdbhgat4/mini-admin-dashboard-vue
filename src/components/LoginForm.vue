@@ -1,26 +1,27 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+
+const authStore = useAuthStore();
 </script>
 
 <template>
-    <form id="auth" class="center">
+    <form id="auth" class="center" @submit.prevent="authStore.login">
         <div class="card">
             <div class="logo" style="padding: 0 0 1rem; color: var(--ink)">Pulse<b>.</b></div>
-            <h1 data-i18n="signin">{{ t('signin') }}</h1>
-            <p data-i18n="signin_p">{{ t('signin_p') }}</p>
+            <h1>{{ t('signin') }}</h1>
+            <p>{{ t('signin_p') }}</p>
             <label class="f">
-                <b data-i18n="email">{{ t('email') }}</b>
-                <!-- <span>name@company.com</span> -->
-                <input type="email" placeholder="name@company.com" />
+                <b>{{ t('email') }}</b>
+                <input type="email" placeholder="name@company.com" v-model="authStore.formData.email" />
             </label>
             <label class="f">
-                <b data-i18n="pass">{{ t('pass') }}</b>
-                <!-- <span>••••••••</span> -->
-                <input type="password" placeholder="••••••••" />
+                <b>{{ t('pass') }}</b>
+                <input type="password" placeholder="••••••••" v-model="authStore.formData.password" />
             </label>
-            <button class="btn" data-role="admin" data-i18n="signin">{{ t('signin') }}</button>
+            <button class="btn">{{ t('signin') }}</button>
         </div>
     </form>
 </template>

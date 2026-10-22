@@ -1,13 +1,21 @@
 <script setup>
+import { useReportsStore } from '@/stores/reports';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+
+const reportsStore = useReportsStore();
+
+onMounted(() => {
+    reportsStore.fetchData();
+});
 </script>
 
 <template>
     <section data-page="reports">
         <div class="panel">
-            <h2 data-i18n="n_reports">{{ t('n_reports') }}</h2>
+            <h2>{{ t('n_reports') }}</h2>
             <div class="tw">
                 <table>
                     <thead>
@@ -18,29 +26,22 @@ const { t } = useI18n();
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>User growth</td>
-                            <td>Last 30 days</td>
-                            <td>CSV</td>
-                            <td>
-                                <button class="bs">{{ t('download') }}</button>
-                            </td>
+
+                    <tbody v-if="reportsStore.loading">
+                        <tr v-for="i in 4" :key="i">
+                            <td v-for="j in 4" :key="j"><Skeleton width="" height="27px"></Skeleton></td>
                         </tr>
-                        <tr>
-                            <td>Issue summary</td>
-                            <td>This quarter</td>
-                            <td>PDF</td>
+                    </tbody>
+
+                    <tbody v-else>
+                        <tr v-for="obj in reportsStore.reports">
+                            <td>{{ obj.title }}</td>
+                            <td>{{ obj.period }}</td>
+                            <td>{{ obj.format }}</td>
                             <td>
-                                <button class="bs">{{ t('download') }}</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Uptime</td>
-                            <td>Last 90 days</td>
-                            <td>PDF</td>
-                            <td>
-                                <button class="bs">{{ t('download') }}</button>
+                                <a :href="obj.download_url" download class="bs" :aria-disabled="!obj.download_url">
+                                    {{ t('download') }}
+                                </a>
                             </td>
                         </tr>
                     </tbody>

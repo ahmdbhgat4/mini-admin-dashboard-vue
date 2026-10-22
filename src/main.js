@@ -1,28 +1,33 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
+import { createPersistedState } from 'pinia-plugin-persistedstate';
 import Toast from 'vue-toastification';
 import { createI18n } from 'vue-i18n';
-
 import App from '@/App.vue';
 import router from '@/router';
+import VueAwesomePaginate from 'vue-awesome-paginate';
+import { en, ar } from '@/locales';
+import Skeleton from '@brayamvalero/vue3-skeleton';
+
+import '@brayamvalero/vue3-skeleton/dist/style.css';
 import '@/index.css';
 import 'vue-toastification/dist/index.css';
-import { ar, en } from '@/locales';
 
 const app = createApp(App);
 const pinia = createPinia();
 const i18n = createI18n({
-    locale: 'ar',
+    legacy: false,
+    locale: 'en',
     fallbackLocale: 'en',
     messages: { en, ar },
 });
 
-pinia.use(piniaPluginPersistedstate);
+pinia.use(
+    createPersistedState({
+        key: id => `__persisted__${id}`,
+    }),
+);
 
-app.use(Toast, {});
-app.use(i18n);
-app.use(pinia);
-app.use(router);
+app.use(pinia).use(router).use(i18n).use(Toast).use(VueAwesomePaginate).use(Skeleton);
 
 app.mount('#app');

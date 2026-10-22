@@ -1,0 +1,187 @@
+{
+    "languages": [
+        {
+            "id": "locale_en_8912738",
+            "code": "en",
+            "name": "English",
+            "dir": "ltr"
+        },
+        {
+            "id": "locale_ar_8942038",
+            "code": "ar",
+            "name": "العربية",
+            "dir": "rtl"
+        }
+    ],
+    "users": [
+        {
+            "name": "Ahmed Hashem",
+            "email": "ahmdbhgat4@gmail.com",
+            "role": "admin",
+            "status": "active",
+            "id": "x4TxrsJuIb4",
+            "newsletter_subscribed": false
+        },
+        {
+            "name": "Amr Adel",
+            "email": "amr@company.com",
+            "role": "member",
+            "status": "active",
+            "newsletter_subscribed": false,
+            "id": "qIXeLuo3p8o"
+        },
+        {
+            "name": "Abdo Wagdy",
+            "email": "abdo@company.com",
+            "role": "member",
+            "status": "pending",
+            "newsletter_subscribed": false,
+            "id": "u8Y2VxlkDP4"
+        },
+        {
+            "name": "Islam Mohamed",
+            "email": "islam@company.com",
+            "role": "member",
+            "status": "active",
+            "newsletter_subscribed": false,
+            "id": "KZ5OwtKFUxY"
+        },
+        {
+            "name": "Ahmed Hani",
+            "email": "ahani@company.com",
+            "role": "admin",
+            "status": "disabled",
+            "newsletter_subscribed": false,
+            "id": "WafH7DqGkgY"
+        }
+    ],
+    "reports": [
+        {
+            "id": "9sj298h98h921",
+            "title": "User growth",
+            "period": "Last 30 days",
+            "format": "CSV",
+            "download_url": ""
+        },
+        {
+            "id": "gfu6u6bfsb46b",
+            "title": "Issue summary",
+            "period": "This quarter",
+            "format": "PDF",
+            "download_url": ""
+        },
+        {
+            "id": "0cs0n9094scbn0q",
+            "title": "Uptime",
+            "period": "Last 90 days",
+            "format": "PDF",
+            "download_url": ""
+        }
+    ],
+    "activity_log": [
+        {
+            "id": "l0123b8782",
+            "name": "Layla",
+            "action": "Changed Omar's role to Member",
+            "date": "10-14-2026 6:22:49"
+        },
+        {
+            "id": "bd91bs8278",
+            "name": "Layla",
+            "action": "Disabled Youssef's account",
+            "date": "10-13-2026 14:15:36"
+        },
+        {
+            "id": "a87abv2368",
+            "name": "Amira",
+            "action": "Exported the user growth report",
+            "date": "9-09-2026 11:01:01"
+        }
+    ],
+    "stats": {
+        "stats": {
+            "total_users": {
+                "display": "1,284",
+                "sub": "+4.2%",
+                "status": "increase"
+            },
+            "active_today": {
+                "display": "342",
+                "sub": "+1.1%",
+                "status": "increase"
+            },
+            "open_issues": {
+                "display": "17",
+                "sub": "-3",
+                "status": "decrease"
+            },
+            "uptime": {
+                "display": "99.9%",
+                "sub": "30 days",
+                "status": "increase"
+            }
+        },
+        "signups": {
+            "mon": 28,
+            "tue": 55,
+            "wed": 46,
+            "thu": 90,
+            "fri": 62,
+            "sat": 30,
+            "sun": 24
+        },
+        "recent_activity": [
+            {
+                "id": "sb812b8s78",
+                "name": "Layla Hassan",
+                "title": "Layla updated a profile",
+                "date": "10-14-2026 6:25:49"
+            },
+            {
+                "id": "n94580954nx",
+                "name": "Omar Khaled",
+                "title": "Omar changed a role",
+                "date": "10-10-2026 11:20:43"
+            },
+            {
+                "id": "81z2b721889",
+                "name": "Sara Nabil",
+                "title": "Sara exported a report",
+                "date": "7-13-2026 13:35:01"
+            }
+        ]
+    },
+    "notifications": [
+        {
+            "title": "\"Ahmed Hani\" was updated",
+            "created_at": 1792272023279,
+            "read": true,
+            "id": "1jj1907HW5s"
+        },
+        {
+            "title": "\"Ahmed Hani\" profile was updated",
+            "created_at": 1792273444134,
+            "read": true,
+            "id": "Xs16oup-OpY"
+        },
+        {
+            "title": "\"Ahmed Hani\" profile was updated",
+            "created_at": 1792273526276,
+            "read": true,
+            "id": "xS2sNxKUD2g"
+        },
+        {
+            "title": "\"Ahmed Hashem\" profile was updated",
+            "created_at": 1792333503972,
+            "read": false,
+            "id": "J41_iS8DgPE"
+        },
+        {
+            "title": "\"Amr Adel\" profile was updated",
+            "created_at": 1792333859734,
+            "read": false,
+            "id": "gzJay0m_6ok"
+        }
+    ],
+    "$schema": "./node_modules/json-server/schema.json"
+}

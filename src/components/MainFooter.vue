@@ -6,13 +6,13 @@ const { t } = useI18n();
 
 <template>
     <footer class="foot">
-        <span data-i18n="foot">{{ t('foot') }}</span>
+        <span>{{ t('foot') }}</span>
         <span>
             <i></i>
-            <span data-i18n="stat" style="margin: 0">{{ t('stat') }} </span>
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>Help</span>
+            <span style="margin-inline-end: 1rem">{{ t('stat') }}</span>
+            <span>{{ t('privacy') }}</span>
+            <span>{{ t('terms') }}</span>
+            <span>{{ t('help') }}</span>
         </span>
     </footer>
 </template>

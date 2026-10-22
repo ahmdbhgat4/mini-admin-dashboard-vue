@@ -1,6 +1,7 @@
 export const en = {
     signin: 'Sign in',
     signin_p: 'Use your work account to continue.',
+    logout: 'Logout',
     email: 'Email',
     pass: 'Password',
     n_dash: 'Dashboard',
@@ -72,4 +73,8 @@ export const en = {
     lang_load_err: "Couldn't load all languages. Showing defaults.",
     lang_loading: 'Loading languages...',
     lang: 'Language',
+    new: 'New',
+    read: 'Read',
+    notif_empty: 'You have no notifications',
+    show_all: 'Show all',
 };

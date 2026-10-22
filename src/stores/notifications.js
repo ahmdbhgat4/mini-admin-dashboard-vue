@@ -1,0 +1,236 @@
+import { ref } from 'vue';
+import { defineStore } from 'pinia';
+import { useAuthStore } from '@/stores/auth';
+import { supabase } from '@/utils/supabase';
+
+export const useNotificationsStore = defineStore('notifications', () => {
+    // state
+    const loading = ref(false);
+    const currentPage = ref(1);
+    const pageSize = ref(5);
+    const total = ref(0);
+    const totalPages = ref(0);
+    const list = ref([]);
+    const unsubscribe = ref(null);
+    const unreadCount = ref(0);
+    const abortController = ref(null);
+
+    // getters
+    const authStore = useAuthStore();
+
+    // actions
+    async function subscribe() {
+        // 1. subscribe first, so nothing is missed during the initial fetch
+        const channel = supabase
+            .channel(`notifications:${authStore.user.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notifications',
+                    // filter: `user_id=eq.${authStore.user.id}`,
+                },
+                _handleChanges,
+            )
+            .subscribe(async status => {
+                // console.log({ status });
+                switch (status) {
+                    case 'SUBSCRIBED':
+                        try {
+                            await fetchNotifications();
+                        } catch (err) {
+                            console.error(err);
+                        }
+
+                        break;
+                    case 'CHANNEL_ERROR':
+                    case 'TIMED_OUT':
+                        console.error('Realtime problem:', status);
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+        unsubscribe.value = () => supabase.removeChannel(channel);
+    }
+    async function _fetchUnreadCount() {
+        const { count, error } = await supabase
+            .from('notifications')
+            .select('is_read', { count: 'exact' })
+            .eq('user_id', authStore.user.id)
+            .eq('is_read', false);
+
+        if (error) throw error;
+
+        unreadCount.value = count;
+    }
+    async function fetchNotifications() {
+        if (abortController.value) {
+            abortController.value.abort();
+        }
+        abortController.value = new AbortController();
+
+        const from = (currentPage.value - 1) * pageSize.value;
+        const to = from + pageSize.value - 1;
+
+        loading.value = true;
+        let query = supabase
+            .from('notifications')
+            .select('id, content, is_read, created_at', { count: 'exact' })
+            .eq('user_id', authStore.user.id)
+            .order('created_at', { ascending: false })
+            .range(from, to)
+            .abortSignal(abortController.value.signal);
+        // .eq('is_read', false);
+
+        const { data: _list, count, error } = await query;
+
+        if (error) {
+            // "AbortError: signal is aborted without reason"
+            if (!error.message.includes('AbortError')) {
+                throw error;
+            }
+        }
+
+        _onChange({ list: _list, total: count });
+        loading.value = false;
+    }
+    async function _handleChanges(payload = {}) {
+        const { eventType, new: _new, old: _old } = payload;
+
+        let _list = [...list.value];
+        let _total = total.value;
+
+        switch (eventType) {
+            case 'INSERT':
+                // dedupe by id in case the fetch already returned this row
+                if (!_list.some(n => n.id === _new.id)) {
+                    _list = [_new, ..._list];
+                }
+                break;
+
+            case 'UPDATE':
+                // dedupe by id in case the fetch already returned this row
+                if (!_list.some(n => n.id === _new.id)) {
+                    _list = [_new, ..._list];
+                } else {
+                    _list = _list.map(n => (n.id === _new.id ? _new : n));
+                }
+                break;
+
+            case 'DELETE':
+                _list = _list.filter(n => n.id !== _old.id);
+                break;
+            default:
+                break;
+        }
+
+        if (_list.length > list.value.length) {
+            // item added
+            _total++;
+            if (_list.length > pageSize.value) {
+                _list = _list.slice(0, pageSize.value);
+            }
+        } else if (_list.length < list.value.length) {
+            // item deleted
+            if (_list.length) {
+                _total--;
+            }
+        }
+
+        if (_list.length < pageSize.value && _list.length < _total) {
+            try {
+                await fetchNotifications();
+            } catch (err) {
+                console.error(err);
+            }
+        } else {
+            _onChange({ list: [..._list], total: _total });
+        }
+    }
+    async function push(content = '') {
+        if (abortController.value) {
+            abortController.value.abort();
+        }
+        abortController.value = new AbortController();
+
+        const { data, error } = await supabase
+            .from('notifications')
+            .insert({
+                // id: '',
+                // created_at: '',
+                content,
+                is_read: false,
+                user_id: authStore.user.id,
+            })
+            .select()
+            .single()
+            .abortSignal(abortController.value.signal);
+
+        if (error) throw error;
+
+        console.log('push: ', data);
+    }
+    async function markAsRead(notificationId = '') {
+        if (abortController.value) {
+            abortController.value.abort();
+        }
+        abortController.value = new AbortController();
+
+        const { error } = await supabase
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('is_read', false)
+            .eq('id', notificationId)
+            .select('id')
+            .abortSignal(abortController.value.signal);
+
+        if (error) throw error;
+        return data.length; // == 1 then success
+    }
+    async function markAllAsRead() {
+        if (abortController.value) {
+            abortController.value.abort();
+        }
+        abortController.value = new AbortController();
+
+        const { data, error } = await supabase
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('user_id', authStore.user.id)
+            .eq('is_read', false)
+            .select('id')
+            .abortSignal(abortController.value.signal);
+
+        if (error) throw error;
+        return data.length; // how many rows were updated
+    }
+    function _onChange({ list: _list, total: _total }) {
+        // console.log({ _list, _total });
+
+        _fetchUnreadCount();
+        list.value = _list;
+        total.value = _total;
+        totalPages.value = Math.ceil(_total / pageSize.value);
+    }
+
+    return {
+        // state
+        pageSize,
+        loading,
+        currentPage,
+        list,
+        total,
+        totalPages,
+        unsubscribe,
+        unreadCount,
+        // actions
+        subscribe,
+        push,
+        markAsRead,
+        markAllAsRead,
+        fetchNotifications,
+    };
+});

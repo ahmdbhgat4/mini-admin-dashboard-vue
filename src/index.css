@@ -132,6 +132,9 @@ select {
     padding: 0.05rem 0.45rem;
     border-radius: 1rem;
 }
+.no-drop {
+    cursor: no-drop;
+}
 .prev {
     margin-top: auto;
     font-size: 0.82rem;
@@ -256,9 +259,28 @@ select {
     border-radius: 0.5rem;
     display: flex;
     gap: 0.6rem;
+    margin-top: 0.125rem;
 }
 .pop li.un {
     background: var(--bg);
+}
+.pop li.unset {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+}
+.pop .action {
+    text-decoration: none;
+    text-align: center;
+    width: 100%;
+    color: inherit;
+    cursor: pointer;
+    margin-top: 0.25rem;
+    border-radius: inherit;
+    padding: 0.6rem 0.7rem;
+}
+.pop .action:hover {
+    background-color: var(--bg);
 }
 .pop li i {
     width: 0.5rem;
@@ -289,25 +311,31 @@ main {
     border: 1px solid var(--line);
     border-radius: 0.8rem;
 }
-.strip div {
+.strip .strip__card {
     padding: 1.1rem 1.3rem;
     border-inline-end: 1px solid var(--line);
 }
-.strip div:last-child {
+.strip .strip__card:last-child {
     border: 0;
 }
 .strip small {
     color: var(--muted);
+    min-height: 1rem;
 }
 .strip b {
     display: block;
     font: 800 1.9rem/1.1 var(--f);
     letter-spacing: -0.02em;
+    min-height: 34px;
+    margin-block: 0.125rem;
 }
-.up {
+.strip span {
     color: var(--ok);
     font-size: 0.85rem;
     font-weight: 600;
+    min-height: 1rem;
+}
+.up {
 }
 .grid {
     display: grid;
@@ -358,9 +386,10 @@ main {
     display: grid;
     gap: 0.8rem;
 }
-.act li {
+.act .item {
     display: flex;
     gap: 0.7rem;
+    align-items: center;
 }
 .act small {
     color: var(--muted);
@@ -415,6 +444,7 @@ tr:last-child td {
 .chip.n {
     background: var(--bg);
     color: var(--muted);
+    text-align: center;
 }
 .center {
     min-height: 100vh;
@@ -465,9 +495,19 @@ tr:last-child td {
     font-weight: 800;
     cursor: pointer;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 .btn.in {
-    width: auto;
+    width: fit-content;
+}
+.text-center {
+    text-align: center;
+}
+.decoration-none {
+    text-decoration: none;
 }
 .err {
     text-align: start;
@@ -538,6 +578,11 @@ tr:last-child td {
     font-weight: 600;
     color: var(--ink);
     margin-inline-end: 0.125rem;
+    text-decoration: none;
+}
+.bs[aria-disabled='true'] {
+    opacity: 0.5;
+    pointer-events: none;
 }
 .bs.d {
     color: var(--bad);
@@ -625,6 +670,44 @@ tr:last-child td {
     border-radius: 0.6rem;
     font-weight: 600;
 }
+
+.pagination-container {
+    list-style-type: none;
+    margin: 1.2rem 0 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* justify-content: center; */
+}
+.paginate-buttons {
+    --size: 2.4rem;
+    width: var(--size);
+    min-width: var(--size);
+    height: var(--size);
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.88rem;
+    border: 1px solid var(--line);
+    background-color: transparent;
+    border-radius: 0.5rem;
+}
+.paginate-buttons:hover {
+    background-color: var(--bg);
+}
+.paginate-buttons.active-page {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+}
+.paginate-buttons.back-button {
+}
+.paginate-buttons.next-button {
+}
+.paginate-buttons.number-buttons {
+}
+
 @media (max-width: 860px) {
     .shell {
         grid-template-columns: 1fr;
