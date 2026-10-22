@@ -36,24 +36,30 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach(to => {
+router.beforeEach((to, from) => {
     const authStore = useAuthStore();
 
-    if (to.meta.requiresGuest) {
-        // auth pages (must be logged out)
-        if (authStore.loggedIn) {
-            return { name: 'dashboard' }; // false
+    if (authStore.loggedIn) {
+        // authenticated (user)
+        if (from.query.redirect) {
+            // handle redirect
+            return { path: from.query.redirect };
         }
-    } else if (to.meta.requiresAdmin) {
-        // admin pages only
-        if (!authStore.loggedIn) {
-            return { name: 'auth-login' };
-        } else if (authStore.user.role !== 'admin') {
-            // return { name: 'access-denied' };
+
+        if (to.meta.requiresGuest) {
+            // at auth page (redirect to dashboard)
+            return { name: 'dashboard' };
+        } else if (to.meta.requiresAdmin) {
+            if (authStore.user.role !== 'admin') {
+                // return { name: 'access-denied' };
+            }
         }
-    } else if (!authStore.loggedIn) {
-        // normal auth pages (member|admin)
-        return { name: 'auth-login' };
+    } else {
+        // not-authenticated (guest)
+        if (!to.meta.requiresGuest) {
+            // not at the auth page
+            return { name: 'auth-login', query: { redirect: to.fullPath } };
+        }
     }
 });
 

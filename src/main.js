@@ -8,6 +8,8 @@ import router from '@/router';
 import VueAwesomePaginate from 'vue-awesome-paginate';
 import { en, ar } from '@/locales';
 import Skeleton from '@brayamvalero/vue3-skeleton';
+import Sentry from '@/utils/error-tracking';
+import { createSentryPiniaPlugin } from '@sentry/vue';
 // styles
 import '@brayamvalero/vue3-skeleton/dist/style.css';
 import 'vue-toastification/dist/index.css';
@@ -18,6 +20,13 @@ const pinia = createPinia();
 const i18n = createI18n({ legacy: false, locale: 'en', fallbackLocale: 'en', messages: { en, ar } });
 
 pinia.use(createPersistedState({ key: id => `__persisted__${id}` }));
+pinia.use(createSentryPiniaPlugin());
+
+// app.config.errorHandler = (err, vm, info) => {
+//     console.log({ err, vm, info });
+// };
+
+Sentry.addIntegration(Sentry.vueIntegration({ app }));
 
 app.use(pinia)
     .use(router)
