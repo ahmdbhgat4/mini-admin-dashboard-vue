@@ -2,15 +2,19 @@
 import Sidebar from '@/components/Sidebar.vue';
 import MainHeader from '@/components/MainHeader.vue';
 import MainFooter from '@/components/MainFooter.vue';
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useNotificationsStore } from '@/stores/notifications';
 import { supabase } from '@/utils/supabase';
 import { useRouter } from 'vue-router';
 import { useGlobalStore } from '@/stores/global';
+import { useSettingsStore } from '@/stores/settings';
+import { SkeletonTheme } from '@brayamvalero/vue3-skeleton';
 
+const skeletonTheme = ref({ baseColor: '', highlightColor: '' });
 const globalStore = useGlobalStore();
 const notificationsStore = useNotificationsStore();
+const settingsStore = useSettingsStore();
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -50,20 +54,37 @@ onMounted(async () => {
 onUnmounted(() => {
     notificationsStore.unsubscribe?.();
 });
+
+watch(
+    () => settingsStore.theme,
+    (newTheme = '') => {
+        let bc = getComputedStyle(document.body).getPropertyValue('--bg');
+        let hlc = getComputedStyle(document.body).getPropertyValue('--line');
+        if (newTheme === 'dark') {
+            bc = getComputedStyle(document.body).getPropertyValue('--line');
+            hlc = getComputedStyle(document.body).getPropertyValue('--bg');
+        }
+        skeletonTheme.value.baseColor = bc;
+        skeletonTheme.value.highlightColor = hlc;
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
-    <div :class="{ shell: authStore.loggedIn }">
-        <Sidebar v-if="authStore.loggedIn" />
+    <SkeletonTheme v-bind="skeletonTheme">
+        <div :class="{ shell: authStore.loggedIn }">
+            <Sidebar v-if="authStore.loggedIn" />
 
-        <div>
-            <MainHeader />
+            <div>
+                <MainHeader />
 
-            <main>
-                <RouterView />
-            </main>
+                <main>
+                    <RouterView />
+                </main>
 
-            <MainFooter />
+                <MainFooter />
+            </div>
         </div>
-    </div>
+    </SkeletonTheme>
 </template>

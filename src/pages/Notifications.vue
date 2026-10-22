@@ -57,7 +57,13 @@ const formatDate = (date = '') => formatDistanceToNow(new Date(date));
                 </li>
             </ul>
 
+            <ul v-if="notificationsStore.loading" class="pagination-container">
+                <li v-for="i in 3" :key="i">
+                    <Skeleton class="paginate-buttons number-buttons"></Skeleton>
+                </li>
+            </ul>
             <vue-awesome-paginate
+                v-else
                 :total-items="notificationsStore.total"
                 :items-per-page="notificationsStore.pageSize"
                 :max-pages-shown="5"

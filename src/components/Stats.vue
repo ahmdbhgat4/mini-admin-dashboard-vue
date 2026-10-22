@@ -14,7 +14,7 @@ const setStatusStyle = (status = '') => (status === 'decrease' ? 'var(--bad)' : 
     <div class="strip">
         <!-- total_users -->
         <div class="strip__card">
-            <Skeleton width="65px" height="16px" :loading="globalStore.loading">
+            <Skeleton width="80px" height="16px" :loading="globalStore.loading">
                 <small>{{ t('s1') }}</small>
             </Skeleton>
 
@@ -31,7 +31,7 @@ const setStatusStyle = (status = '') => (status === 'decrease' ? 'var(--bad)' : 
 
         <!-- active_today -->
         <div class="strip__card">
-            <Skeleton width="65px" height="16px" :loading="globalStore.loading">
+            <Skeleton width="80px" height="16px" :loading="globalStore.loading">
                 <small>{{ t('s2') }}</small>
             </Skeleton>
 
@@ -48,7 +48,7 @@ const setStatusStyle = (status = '') => (status === 'decrease' ? 'var(--bad)' : 
 
         <!-- open_issues -->
         <div class="strip__card">
-            <Skeleton width="65px" height="16px" :loading="globalStore.loading">
+            <Skeleton width="80px" height="16px" :loading="globalStore.loading">
                 <small>{{ t('s3') }}</small>
             </Skeleton>
 
@@ -65,7 +65,7 @@ const setStatusStyle = (status = '') => (status === 'decrease' ? 'var(--bad)' : 
 
         <!-- uptime -->
         <div class="strip__card">
-            <Skeleton width="65px" height="16px" :loading="globalStore.loading">
+            <Skeleton width="80px" height="16px" :loading="globalStore.loading">
                 <small>{{ t('s4') }}</small>
             </Skeleton>
 

@@ -131,25 +131,23 @@ watch(showNotifications, (show = false) => {
                 </svg>
             </button>
         </div>
+
         <!-- dropdown (notifications) -->
         <div class="pop" v-show="showNotifications" id="pop" role="dialog" aria-label="Notifications">
-            <h3>{{ t('notif') }}</h3>
-            <ul v-if="notificationsStore.list.length">
-                <li v-for="obj in notificationsStore.list" :key="obj.id" :class="obj.is_read ? 'rd' : 'un'">
+            <div class="pop__header">
+                <h3>{{ t('notif') }}</h3>
+
+                <RouterLink :to="{ name: 'notifications' }" class="bs" @click="showNotifications = !showNotifications">
+                    {{ t('show_all') }}
+                </RouterLink>
+            </div>
+
+            <ul v-if="notificationsStore.baseList.length">
+                <li v-for="obj in notificationsStore.baseList" :key="obj.id" :class="obj.is_read ? 'rd' : 'un'">
                     <i></i>
                     <div>
                         {{ obj.content }} <small>{{ formatDate(obj.created_at) }}</small>
                     </div>
-                </li>
-
-                <li class="unset">
-                    <RouterLink
-                        :to="{ name: 'notifications' }"
-                        class="action"
-                        @click="showNotifications = !showNotifications"
-                    >
-                        {{ t('show_all') }}
-                    </RouterLink>
                 </li>
             </ul>
             <div v-else class="">{{ t('notif_empty') }}</div>

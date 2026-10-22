@@ -1,4 +1,5 @@
 export const en = {
+    id: 'ID',
     signin: 'Sign in',
     signin_p: 'Use your work account to continue.',
     logout: 'Logout',
@@ -77,4 +78,5 @@ export const en = {
     read: 'Read',
     notif_empty: 'You have no notifications',
     show_all: 'Show all',
+    chart_load_error: "Chart couldn't be loaded.",
 };

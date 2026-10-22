@@ -1,4 +1,5 @@
 export const ar = {
+    id: 'ID',
     signin: 'تسجيل الدخول',
     signin_p: 'استخدم حساب العمل للمتابعة.',
     logout: 'تسجيل الخروج',
@@ -77,4 +78,5 @@ export const ar = {
     read: 'تم القراءة',
     notif_empty: 'لا يوجد أي اشعارات حاليا',
     show_all: 'اظهار الكل',
+    chart_load_error: "Chart couldn't be loaded.",
 };

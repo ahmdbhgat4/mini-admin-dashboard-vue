@@ -10,6 +10,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     const pageSize = ref(5);
     const total = ref(0);
     const totalPages = ref(0);
+    const baseList = ref([]);
     const list = ref([]);
     const unsubscribe = ref(null);
     const unreadCount = ref(0);
@@ -83,9 +84,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
             .order('created_at', { ascending: false })
             .range(from, to)
             .abortSignal(abortController.value.signal);
-        // .eq('is_read', false);
 
-        const { data: _list, count, error } = await query;
+        const { data: _list, count: _total, error } = await query;
 
         if (error) {
             // "AbortError: signal is aborted without reason"
@@ -94,7 +94,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
             }
         }
 
-        _onChange({ list: _list, total: count });
+        _onChange({ list: [..._list], total: _total });
         loading.value = false;
     }
     async function _handleChanges(payload = {}) {
@@ -207,8 +207,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
         if (error) throw error;
         return data.length; // how many rows were updated
     }
-    function _onChange({ list: _list, total: _total }) {
+    function _onChange({ list: [..._list], total: _total }) {
         // console.log({ _list, _total });
+        if (currentPage.value === 1) {
+            baseList.value = _list;
+        }
 
         _fetchUnreadCount();
         list.value = _list;
@@ -222,6 +225,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
         loading,
         currentPage,
         list,
+        baseList,
         total,
         totalPages,
         unsubscribe,

@@ -249,6 +249,12 @@ select {
     z-index: 10;
     padding: 0.4rem;
 }
+.pop__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
 .pop h3 {
     margin: 0.5rem 0.7rem;
     font-size: 0.95rem;
@@ -701,11 +707,13 @@ tr:last-child td {
     border-color: var(--accent);
     color: var(--accent-ink);
 }
-.paginate-buttons.back-button {
+
+.skeleton-container.paginate-buttons {
+    display: block;
+    border: 0;
 }
-.paginate-buttons.next-button {
-}
-.paginate-buttons.number-buttons {
+.skeleton-container.paginate-buttons .skeleton-loading {
+    height: 100%;
 }
 
 @media (max-width: 860px) {

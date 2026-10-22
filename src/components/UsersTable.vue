@@ -58,7 +58,13 @@ const handlePaginate = () => {};
             </tbody>
         </table>
 
+        <ul v-if="usersStore.loading" class="pagination-container">
+            <li v-for="i in 3" :key="i">
+                <Skeleton class="paginate-buttons number-buttons"></Skeleton>
+            </li>
+        </ul>
         <vue-awesome-paginate
+            v-else
             :total-items="usersStore.total"
             :items-per-page="usersStore.pageSize"
             :max-pages-shown="5"
