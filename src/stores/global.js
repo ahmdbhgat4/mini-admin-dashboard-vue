@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import { useToast } from 'vue-toastification';
 
 export const useGlobalStore = defineStore('global', () => {
     // state
@@ -9,32 +10,28 @@ export const useGlobalStore = defineStore('global', () => {
         languages: [],
         signups: null,
         recent_activity: [],
-        stats: {
-            total_users: {},
-            active_today: {},
-            open_issues: {},
-            uptime: {},
-        },
+        stats: { total_users: {}, active_today: {}, open_issues: {}, uptime: {} },
     });
+
+    // getters
+    const toast = useToast();
 
     // actions
     async function fetchData() {
         loading.value = true;
         const { data, error } = await supabase.from('global_info').select('languages, signups, recent_activity, stats');
+        loading.value = false;
 
         if (error) {
-            const { message, code } = error;
-            console.error(`[${code}] ${message}`);
-        } else {
-            const { languages, signups, recent_activity, stats } = data[0];
-
-            globalData.value.languages = languages;
-            globalData.value.signups = signups;
-            globalData.value.recent_activity = recent_activity;
-            globalData.value.stats = stats;
+            toast.error(error.message);
+            throw error;
         }
 
-        loading.value = false;
+        const { languages, signups, recent_activity, stats } = data[0];
+        globalData.value.languages = languages;
+        globalData.value.signups = signups;
+        globalData.value.recent_activity = recent_activity;
+        globalData.value.stats = stats;
     }
 
     return {

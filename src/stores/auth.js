@@ -1,7 +1,8 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
-import { useNotificationsStore } from '@/stores/notifications';
+import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 
 export const useAuthStore = defineStore(
     'auth',
@@ -18,7 +19,9 @@ export const useAuthStore = defineStore(
         const accessToken = ref('');
         const user = ref({});
 
-        const notificationsStore = useNotificationsStore();
+        // getters
+        const toast = useToast();
+        const { t } = useI18n();
 
         // actions
         async function login() {
@@ -30,12 +33,12 @@ export const useAuthStore = defineStore(
             loading.value = false;
 
             if (error) {
-                const { status, message } = error;
-                console.error(`[${status}] ${message}`);
-            } else {
-                formData.value.email = '';
-                formData.value.password = '';
+                toast.error(error.message);
+                throw error;
             }
+            toast.success(t('login_success'));
+            formData.value.email = '';
+            formData.value.password = '';
         }
         async function handleUpdate() {
             loading.value = true;
@@ -51,18 +54,21 @@ export const useAuthStore = defineStore(
             loading.value = false;
 
             if (error) {
-                const { status, message } = error;
-                console.error(`[${status}] ${message}`);
+                toast.error(error.message);
+                throw error;
             }
+            toast.success(t('profile_update_success'));
         }
         async function logout() {
             loading.value = true;
             const { error } = await supabase.auth.signOut();
             loading.value = false;
+
             if (error) {
-                const { status, message } = error;
-                console.error(`[${status}] ${message}`);
+                toast.error(error.message);
+                throw error;
             }
+            toast.success(t('logout_success'));
         }
         function filterUserData(obj = null) {
             if (!obj) {
@@ -83,12 +89,12 @@ export const useAuthStore = defineStore(
         async function refreshCredentials() {
             // refresh from (session|localStorage)
             const { data, error } = await supabase.auth.getSession();
+
             if (error) {
-                const { status, message } = error;
-                console.error(`[${status}] ${message}`);
-            } else {
-                user.value = filterUserData(data.session?.user);
+                toast.error(error.message);
+                throw error;
             }
+            user.value = filterUserData(data.session?.user);
         }
 
         return {

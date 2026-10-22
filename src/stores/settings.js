@@ -9,7 +9,6 @@ export const useSettingsStore = defineStore(
     'settings',
     () => {
         // state
-        const loading = ref(false);
         const theme = ref('');
         const activeLanguage = ref(null);
         const dateLocaleModules = ref({});
@@ -51,7 +50,6 @@ export const useSettingsStore = defineStore(
         }
 
         return {
-            loading,
             theme,
             activeLanguage,
             dateLocaleModules,

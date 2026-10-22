@@ -57,19 +57,29 @@ const formatDate = (date = '') => formatDistanceToNow(new Date(date));
                 </li>
             </ul>
 
-            <ul v-if="notificationsStore.loading" class="pagination-container">
-                <li v-for="i in 3" :key="i">
-                    <Skeleton class="paginate-buttons number-buttons"></Skeleton>
-                </li>
-            </ul>
-            <vue-awesome-paginate
-                v-else
-                :total-items="notificationsStore.total"
-                :items-per-page="notificationsStore.pageSize"
-                :max-pages-shown="5"
-                v-model="notificationsStore.currentPage"
-                @click="notificationsStore.fetchNotifications"
-            />
+            <div v-if="notificationsStore.loading" class="pagination-wrapper">
+                <ul class="pagination-container">
+                    <li v-for="i in 5" :key="i">
+                        <Skeleton class="paginate-buttons number-buttons"></Skeleton>
+                    </li>
+                </ul>
+
+                <Skeleton width="80px" height="22px"></Skeleton>
+            </div>
+
+            <div v-else class="pagination-wrapper">
+                <vue-awesome-paginate
+                    :total-items="notificationsStore.total"
+                    :items-per-page="notificationsStore.pageSize"
+                    :max-pages-shown="5"
+                    v-model="notificationsStore.currentPage"
+                    @click="notificationsStore.fetchNotifications"
+                />
+
+                <span class="muted">
+                    {{ `( ${notificationsStore.total} ) ${t('results')}` }}
+                </span>
+            </div>
         </div>
     </section>
 </template>

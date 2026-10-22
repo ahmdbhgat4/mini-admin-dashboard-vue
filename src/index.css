@@ -679,7 +679,6 @@ tr:last-child td {
 
 .pagination-container {
     list-style-type: none;
-    margin: 1.2rem 0 0;
     padding: 0;
     display: flex;
     align-items: center;
@@ -714,6 +713,30 @@ tr:last-child td {
 }
 .skeleton-container.paginate-buttons .skeleton-loading {
     height: 100%;
+}
+.empty-text {
+    text-align: center;
+    color: var(--muted);
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+.empty-text .btn {
+    font-weight: 500;
+}
+
+.pagination-wrapper {
+    margin: 1.2rem 0 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.pagination-wrapper .muted {
+    color: var(--muted);
+    font-size: 0.88rem;
 }
 
 @media (max-width: 860px) {

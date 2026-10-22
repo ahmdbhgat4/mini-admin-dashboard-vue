@@ -32,11 +32,13 @@ const handlePaginate = () => {};
             </thead>
             <tbody v-if="usersStore.loading">
                 <tr v-for="i in 5" :key="i">
-                    <td v-for="j in 5" :key="j"><Skeleton width="" height="27px"></Skeleton></td>
+                    <td v-for="j in 5" :key="j">
+                        <Skeleton height="27px"></Skeleton>
+                    </td>
                 </tr>
             </tbody>
 
-            <tbody v-else>
+            <tbody v-else-if="usersStore.list.length">
                 <tr v-for="obj in usersStore.list" :key="obj.id">
                     <td>{{ obj.name }}</td>
                     <td>{{ obj.email }}</td>
@@ -58,18 +60,28 @@ const handlePaginate = () => {};
             </tbody>
         </table>
 
+        <div v-if="!usersStore.loading && !usersStore.list.length" class="empty-text">
+            {{ t('empty_results') }}
+            <!-- <button class="btn in">{{ t('reset_filters') }}</button> -->
+        </div>
+
         <ul v-if="usersStore.loading" class="pagination-container">
             <li v-for="i in 3" :key="i">
                 <Skeleton class="paginate-buttons number-buttons"></Skeleton>
             </li>
         </ul>
-        <vue-awesome-paginate
-            v-else
-            :total-items="usersStore.total"
-            :items-per-page="usersStore.pageSize"
-            :max-pages-shown="5"
-            v-model="usersStore.currentPage"
-            @click="usersStore.fetchUsers"
-        />
+        <div v-else class="pagination-wrapper">
+            <vue-awesome-paginate
+                :total-items="usersStore.total"
+                :items-per-page="usersStore.pageSize"
+                :max-pages-shown="5"
+                v-model="usersStore.currentPage"
+                @click="usersStore.fetchUsers"
+            />
+
+            <span class="muted">
+                {{ `( ${usersStore.total} ) ${t('results')}` }}
+            </span>
+        </div>
     </div>
 </template>

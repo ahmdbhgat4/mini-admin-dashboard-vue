@@ -2,6 +2,8 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { supabase } from '@/utils/supabase';
+import { useToast } from 'vue-toastification';
+import { useI18n } from 'vue-i18n';
 
 export const useUsersStore = defineStore(
     'users',
@@ -21,6 +23,8 @@ export const useUsersStore = defineStore(
 
         // getters
         const notificationsStore = useNotificationsStore();
+        const toast = useToast();
+        const { t } = useI18n();
 
         // actions
         async function addUser() {
@@ -33,14 +37,17 @@ export const useUsersStore = defineStore(
                     role: formData.value.role,
                     status: formData.value.status,
                     newsletter_subscribed: formData.value.newsletter_subscribed,
-                    // created_at: new Date().toISOString(),
+                    // created_at: new Date().toISOString(), // added auto
                     updated_at: new Date().toISOString(),
                 })
                 .select()
                 .single();
 
-            if (error) throw error;
-
+            if (error) {
+                toast.error(error.message);
+                throw error;
+            }
+            toast.success(t('user_add_success'));
             updateModalIsActive.value = false;
             fetchUsers();
         }
@@ -58,11 +65,18 @@ export const useUsersStore = defineStore(
                 .eq('id', formData.value.id)
                 .select()
                 .maybeSingle();
-            // loading.value = false;
+            loading.value = false;
 
-            if (error) throw error;
-            if (!data) throw new Error('Nothing was updated. Check the row id and your update policy.');
+            if (error) {
+                toast.error(error.message);
+                throw error;
+            }
+            if (!data) {
+                toast.error(t('updated_nothing'));
+                throw new Error(t('updated_nothing'));
+            }
 
+            toast.success(t('user_update_success'));
             notificationsStore.push(`${data.name}'s profile was updated!`);
             updateModalIsActive.value = false;
             fetchUsers();
@@ -71,11 +85,20 @@ export const useUsersStore = defineStore(
         async function deleteUser() {
             loading.value = true;
             const { data, error } = await supabase.from('profiles').delete().eq('id', formData.value.id).select();
-            // loading.value = false;
+            loading.value = false;
 
-            if (error) throw error;
-            if (data.length === 0) throw new Error('Nothing was deleted. Check the row id and your delete policy.');
+            if (error) {
+                toast.error(error.message);
+                throw error;
+            }
+            if (data.length === 0) {
+                toast.error(t('deleted_nothing'));
+                throw new Error(t('deleted_nothing'));
+            }
 
+            toast.success(t('user_delete_success'));
+            console.log('deleted: ', { data });
+            // notificationsStore.push(`${data.name}'s profile was deleted!`);
             deleteModalIsActive.value = false;
             fetchUsers();
         }
@@ -105,10 +128,12 @@ export const useUsersStore = defineStore(
 
             loading.value = true;
             const { data: _list, count: _total, error } = await query;
+            loading.value = false;
 
             if (error) {
                 // "AbortError: signal is aborted without reason"
                 if (!error.message.includes('AbortError')) {
+                    toast.error(error.message);
                     throw error;
                 }
             } else {
@@ -116,7 +141,6 @@ export const useUsersStore = defineStore(
                 total.value = _total;
                 totalPages.value = Math.ceil(_total / pageSize.value);
             }
-            loading.value = false;
         }
 
         return {

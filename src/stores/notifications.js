@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { supabase } from '@/utils/supabase';
+import { useToast } from 'vue-toastification';
 
 export const useNotificationsStore = defineStore('notifications', () => {
     // state
@@ -18,6 +19,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
     // getters
     const authStore = useAuthStore();
+    const toast = useToast();
 
     // actions
     async function subscribe() {
@@ -63,7 +65,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
             .eq('user_id', authStore.user.id)
             .eq('is_read', false);
 
-        if (error) throw error;
+        if (error) {
+            toast.error(error.message);
+            throw error;
+        }
 
         unreadCount.value = count;
     }
@@ -77,28 +82,33 @@ export const useNotificationsStore = defineStore('notifications', () => {
         const to = from + pageSize.value - 1;
 
         loading.value = true;
-        let query = supabase
+        const {
+            data: _list,
+            count: _total,
+            error,
+        } = await supabase
             .from('notifications')
             .select('id, content, is_read, created_at', { count: 'exact' })
             .eq('user_id', authStore.user.id)
             .order('created_at', { ascending: false })
             .range(from, to)
             .abortSignal(abortController.value.signal);
-
-        const { data: _list, count: _total, error } = await query;
+        loading.value = false;
 
         if (error) {
             // "AbortError: signal is aborted without reason"
             if (!error.message.includes('AbortError')) {
+                toast.error(error.message);
                 throw error;
             }
+        } else {
+            _onChange({ list: [..._list], total: _total });
         }
-
-        _onChange({ list: [..._list], total: _total });
-        loading.value = false;
     }
     async function _handleChanges(payload = {}) {
         const { eventType, new: _new, old: _old } = payload;
+
+        toast.info(_new.content);
 
         let _list = [...list.value];
         let _total = total.value;
@@ -169,9 +179,12 @@ export const useNotificationsStore = defineStore('notifications', () => {
             .single()
             .abortSignal(abortController.value.signal);
 
-        if (error) throw error;
+        if (error) {
+            toast.error(error.message);
+            throw error;
+        }
 
-        console.log('push: ', data);
+        // console.log('pushed: ', data);
     }
     async function markAsRead(notificationId = '') {
         if (abortController.value) {
@@ -187,10 +200,18 @@ export const useNotificationsStore = defineStore('notifications', () => {
             .select('id')
             .abortSignal(abortController.value.signal);
 
-        if (error) throw error;
+        if (error) {
+            toast.error(error.message);
+            throw error;
+        }
+
         return data.length; // == 1 then success
     }
     async function markAllAsRead() {
+        if (!unreadCount.value) {
+            return;
+        }
+
         if (abortController.value) {
             abortController.value.abort();
         }
@@ -204,7 +225,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
             .select('id')
             .abortSignal(abortController.value.signal);
 
-        if (error) throw error;
+        if (error) {
+            toast.error(error.message);
+            throw error;
+        }
         return data.length; // how many rows were updated
     }
     function _onChange({ list: [..._list], total: _total }) {
