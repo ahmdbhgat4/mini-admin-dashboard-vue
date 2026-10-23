@@ -13,8 +13,8 @@ const usersStore = useUsersStore();
 
 watch(
     usersStore.searchForm,
-    () => {
-        usersStore.fetchUsers();
+    async () => {
+        await usersStore.fetchUsers();
     },
     { immediate: true },
 );

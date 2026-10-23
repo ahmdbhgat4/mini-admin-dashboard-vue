@@ -2,7 +2,6 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { supabase } from '@/utils/supabase';
-import { useToast } from 'vue-toastification';
 
 export const useNotificationsStore = defineStore('notifications', () => {
     // state
@@ -19,7 +18,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
     // getters
     const authStore = useAuthStore();
-    const toast = useToast();
 
     // actions
     async function subscribe() {
@@ -43,7 +41,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
                         try {
                             await fetchNotifications();
                         } catch (err) {
-                            console.error(err);
+                            throw err;
                         }
 
                         break;
@@ -59,18 +57,20 @@ export const useNotificationsStore = defineStore('notifications', () => {
         unsubscribe.value = () => supabase.removeChannel(channel);
     }
     async function _fetchUnreadCount() {
-        const { count, error } = await supabase
-            .from('notifications')
-            .select('is_read', { count: 'exact' })
-            .eq('user_id', authStore.user.id)
-            .eq('is_read', false);
+        try {
+            const { count, error } = await supabase
+                .from('notifications')
+                .select('is_read', { count: 'exact' })
+                .eq('user_id', authStore.user.id)
+                .eq('is_read', false);
 
-        if (error) {
-            toast.error(error.message);
-            throw error;
+            if (error) {
+                throw error;
+            }
+            unreadCount.value = count;
+        } catch (err) {
+            throw err;
         }
-
-        unreadCount.value = count;
     }
     async function fetchNotifications() {
         if (abortController.value) {
@@ -82,33 +82,34 @@ export const useNotificationsStore = defineStore('notifications', () => {
         const to = from + pageSize.value - 1;
 
         loading.value = true;
-        const {
-            data: _list,
-            count: _total,
-            error,
-        } = await supabase
-            .from('notifications')
-            .select('id, content, is_read, created_at', { count: 'exact' })
-            .eq('user_id', authStore.user.id)
-            .order('created_at', { ascending: false })
-            .range(from, to)
-            .abortSignal(abortController.value.signal);
-        loading.value = false;
+        try {
+            const {
+                data: _list,
+                count: _total,
+                error,
+            } = await supabase
+                .from('notifications')
+                .select('id, content, is_read, created_at', { count: 'exact' })
+                .eq('user_id', authStore.user.id)
+                .order('created_at', { ascending: false })
+                .range(from, to)
+                .abortSignal(abortController.value.signal);
 
-        if (error) {
-            // "AbortError: signal is aborted without reason"
-            if (!error.message.includes('AbortError')) {
-                toast.error(error.message);
+            if (error) {
                 throw error;
+            } else {
+                _onChange({ list: [..._list], total: _total });
             }
-        } else {
-            _onChange({ list: [..._list], total: _total });
+        } catch (err) {
+            throw err;
+        } finally {
+            loading.value = false;
         }
     }
     async function _handleChanges(payload = {}) {
         const { eventType, new: _new, old: _old } = payload;
 
-        toast.info(_new.content);
+        // toast.info(_new.content);
 
         let _list = [...list.value];
         let _total = total.value;
@@ -154,7 +155,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
             try {
                 await fetchNotifications();
             } catch (err) {
-                console.error(err);
+                throw err;
             }
         } else {
             _onChange({ list: [..._list], total: _total });
@@ -166,25 +167,27 @@ export const useNotificationsStore = defineStore('notifications', () => {
         }
         abortController.value = new AbortController();
 
-        const { data, error } = await supabase
-            .from('notifications')
-            .insert({
-                // id: '',
-                // created_at: '',
-                content,
-                is_read: false,
-                user_id: authStore.user.id,
-            })
-            .select()
-            .single()
-            .abortSignal(abortController.value.signal);
+        try {
+            const { data, error } = await supabase
+                .from('notifications')
+                .insert({
+                    // id: '',
+                    // created_at: '',
+                    content,
+                    is_read: false,
+                    user_id: authStore.user.id,
+                })
+                .select()
+                .single()
+                .abortSignal(abortController.value.signal);
 
-        if (error) {
-            toast.error(error.message);
-            throw error;
+            if (error) {
+                throw error;
+            }
+            // console.log('pushed: ', data);
+        } catch (err) {
+            throw err;
         }
-
-        // console.log('pushed: ', data);
     }
     async function markAsRead(notificationId = '') {
         if (abortController.value) {
@@ -192,20 +195,22 @@ export const useNotificationsStore = defineStore('notifications', () => {
         }
         abortController.value = new AbortController();
 
-        const { error } = await supabase
-            .from('notifications')
-            .update({ is_read: true })
-            .eq('is_read', false)
-            .eq('id', notificationId)
-            .select('id')
-            .abortSignal(abortController.value.signal);
+        try {
+            const { error } = await supabase
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('is_read', false)
+                .eq('id', notificationId)
+                .select('id')
+                .abortSignal(abortController.value.signal);
 
-        if (error) {
-            toast.error(error.message);
-            throw error;
+            if (error) {
+                throw error;
+            }
+            return data.length; // == 1 then success
+        } catch (err) {
+            throw err;
         }
-
-        return data.length; // == 1 then success
     }
     async function markAllAsRead() {
         if (!unreadCount.value) {
@@ -217,19 +222,22 @@ export const useNotificationsStore = defineStore('notifications', () => {
         }
         abortController.value = new AbortController();
 
-        const { data, error } = await supabase
-            .from('notifications')
-            .update({ is_read: true })
-            .eq('user_id', authStore.user.id)
-            .eq('is_read', false)
-            .select('id')
-            .abortSignal(abortController.value.signal);
+        try {
+            const { data, error } = await supabase
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('user_id', authStore.user.id)
+                .eq('is_read', false)
+                .select('id')
+                .abortSignal(abortController.value.signal);
 
-        if (error) {
-            toast.error(error.message);
-            throw error;
+            if (error) {
+                throw error;
+            }
+            return data.length; // how many rows were updated
+        } catch (err) {
+            throw err;
         }
-        return data.length; // how many rows were updated
     }
     function _onChange({ list: [..._list], total: _total }) {
         // console.log({ _list, _total });

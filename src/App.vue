@@ -28,7 +28,8 @@ supabase.auth.onAuthStateChange(async (state = '') => {
             }
             authStore.loggedIn = true;
             if (router.currentRoute.value.name === 'auth-login') {
-                router.push({ name: 'dashboard' });
+                const redirect = router.currentRoute.value.query.redirect;
+                router.push({ name: redirect || 'dashboard' });
             }
             break;
         case 'SIGNED_OUT':

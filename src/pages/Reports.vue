@@ -7,8 +7,8 @@ const { t } = useI18n();
 
 const reportsStore = useReportsStore();
 
-onMounted(() => {
-    reportsStore.fetchData();
+onMounted(async () => {
+    await reportsStore.fetchData();
 });
 </script>
 

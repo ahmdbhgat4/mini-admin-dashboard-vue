@@ -36,18 +36,19 @@ const router = createRouter({
     routes,
 });
 
+// navigation guards
 router.beforeEach((to, from) => {
     const authStore = useAuthStore();
 
     if (authStore.loggedIn) {
         // authenticated (user)
-        if (from.query.redirect) {
-            // handle redirect
-            return { path: from.query.redirect };
-        }
+        // if (from.query.redirect) {
+        //     // handle redirect
+        //     return { name: from.query.redirect };
+        // }
 
         if (to.meta.requiresGuest) {
-            // at auth page (redirect to dashboard)
+            // at auth page (go to dashboard)
             return { name: 'dashboard' };
         } else if (to.meta.requiresAdmin) {
             if (authStore.user.role !== 'admin') {
@@ -58,7 +59,7 @@ router.beforeEach((to, from) => {
         // not-authenticated (guest)
         if (!to.meta.requiresGuest) {
             // not at the auth page
-            return { name: 'auth-login', query: { redirect: to.fullPath } };
+            return { name: 'auth-login', query: { redirect: to.name } };
         }
     }
 });

@@ -28,28 +28,34 @@ export const useUsersStore = defineStore(
 
         // actions
         async function addUser() {
-            const { error } = await supabase
-                .from('profiles')
-                .insert({
-                    id: formData.value.id,
-                    name: formData.value.name,
-                    email: formData.value.email,
-                    role: formData.value.role,
-                    status: formData.value.status,
-                    newsletter_subscribed: formData.value.newsletter_subscribed,
-                    // created_at: new Date().toISOString(), // added auto
-                    updated_at: new Date().toISOString(),
-                })
-                .select()
-                .single();
+            loading.value = true;
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: formData.value.id,
+                        name: formData.value.name,
+                        email: formData.value.email,
+                        role: formData.value.role,
+                        status: formData.value.status,
+                        newsletter_subscribed: formData.value.newsletter_subscribed,
+                        // created_at: new Date().toISOString(), // added auto
+                        updated_at: new Date().toISOString(),
+                    })
+                    .select()
+                    .single();
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
+                if (error) {
+                    throw error;
+                }
+                toast.success(t('user_add_success'));
+                updateModalIsActive.value = false;
+                await fetchUsers();
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
-            toast.success(t('user_add_success'));
-            updateModalIsActive.value = false;
-            fetchUsers();
         }
 
         async function updateUser() {
@@ -59,48 +65,54 @@ export const useUsersStore = defineStore(
             }
 
             loading.value = true;
-            const { data, error } = await supabase
-                .from('profiles')
-                .update({ ...formData.value, updated_at: new Date().toISOString() })
-                .eq('id', formData.value.id)
-                .select()
-                .maybeSingle();
-            loading.value = false;
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .update({ ...formData.value, updated_at: new Date().toISOString() })
+                    .eq('id', formData.value.id)
+                    .select()
+                    .maybeSingle();
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
-            }
-            if (!data) {
-                toast.error(t('updated_nothing'));
-                throw new Error(t('updated_nothing'));
-            }
+                if (error) {
+                    throw error;
+                }
+                if (!data) {
+                    throw new Error(t('updated_nothing'));
+                }
 
-            toast.success(t('user_update_success'));
-            notificationsStore.push(`${data.name}'s profile was updated!`);
-            updateModalIsActive.value = false;
-            fetchUsers();
+                toast.success(t('user_update_success'));
+                notificationsStore.push(`${data.name}'s profile was updated!`);
+                updateModalIsActive.value = false;
+                await fetchUsers();
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
+            }
         }
 
         async function deleteUser() {
             loading.value = true;
-            const { data, error } = await supabase.from('profiles').delete().eq('id', formData.value.id).select();
-            loading.value = false;
+            try {
+                const { data, error } = await supabase.from('profiles').delete().eq('id', formData.value.id).select();
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
-            }
-            if (data.length === 0) {
-                toast.error(t('deleted_nothing'));
-                throw new Error(t('deleted_nothing'));
-            }
+                if (error) {
+                    throw error;
+                }
+                if (data.length === 0) {
+                    throw new Error(t('deleted_nothing'));
+                }
 
-            toast.success(t('user_delete_success'));
-            console.log('deleted: ', { data });
-            // notificationsStore.push(`${data.name}'s profile was deleted!`);
-            deleteModalIsActive.value = false;
-            fetchUsers();
+                toast.success(t('user_delete_success'));
+                // console.log('deleted: ', { data });
+                // notificationsStore.push(`${data.name}'s profile was deleted!`);
+                deleteModalIsActive.value = false;
+                await fetchUsers();
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
+            }
         }
 
         async function fetchUsers() {
@@ -127,19 +139,20 @@ export const useUsersStore = defineStore(
             }
 
             loading.value = true;
-            const { data: _list, count: _total, error } = await query;
-            loading.value = false;
+            try {
+                const { data: _list, count: _total, error } = await query;
 
-            if (error) {
-                // "AbortError: signal is aborted without reason"
-                if (!error.message.includes('AbortError')) {
-                    toast.error(error.message);
+                if (error) {
                     throw error;
+                } else {
+                    list.value = _list;
+                    total.value = _total;
+                    totalPages.value = Math.ceil(_total / pageSize.value);
                 }
-            } else {
-                list.value = _list;
-                total.value = _total;
-                totalPages.value = Math.ceil(_total / pageSize.value);
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
         }
 

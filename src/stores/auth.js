@@ -26,49 +26,61 @@ export const useAuthStore = defineStore(
         // actions
         async function login() {
             loading.value = true;
-            const { error } = await supabase.auth.signInWithPassword({
-                email: formData.value.email,
-                password: formData.value.password,
-            });
-            loading.value = false;
+            try {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: formData.value.email,
+                    password: formData.value.password,
+                });
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
+                if (error) {
+                    throw error;
+                }
+                toast.success(t('login_success'));
+                formData.value.email = '';
+                formData.value.password = '';
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
-            toast.success(t('login_success'));
-            formData.value.email = '';
-            formData.value.password = '';
         }
         async function handleUpdate() {
             loading.value = true;
-            const { error } = await supabase.auth.updateUser({
-                email: formData.value.email,
-                data: {
-                    display_name: formData.value.name,
-                    newsletter_subscribed: formData.value.newsletter_subscribed,
-                    // role: '',
-                    // status: '',
-                },
-            });
-            loading.value = false;
+            try {
+                const { error } = await supabase.auth.updateUser({
+                    email: formData.value.email,
+                    data: {
+                        display_name: formData.value.name,
+                        newsletter_subscribed: formData.value.newsletter_subscribed,
+                        // role: '',
+                        // status: '',
+                    },
+                });
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
+                if (error) {
+                    throw error;
+                }
+                toast.success(t('profile_update_success'));
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
-            toast.success(t('profile_update_success'));
         }
         async function logout() {
             loading.value = true;
-            const { error } = await supabase.auth.signOut();
-            loading.value = false;
+            try {
+                const { error } = await supabase.auth.signOut();
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
+                if (error) {
+                    throw error;
+                }
+                toast.success(t('logout_success'));
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
-            toast.success(t('logout_success'));
         }
         function filterUserData(obj = null) {
             if (!obj) {
@@ -88,13 +100,18 @@ export const useAuthStore = defineStore(
 
         async function refreshCredentials() {
             // refresh from (session|localStorage)
-            const { data, error } = await supabase.auth.getSession();
+            try {
+                const { data, error } = await supabase.auth.getSession();
 
-            if (error) {
-                toast.error(error.message);
-                throw error;
+                if (error) {
+                    throw error;
+                }
+                user.value = filterUserData(data.session?.user);
+            } catch (err) {
+                throw err;
+            } finally {
+                loading.value = false;
             }
-            user.value = filterUserData(data.session?.user);
         }
 
         return {

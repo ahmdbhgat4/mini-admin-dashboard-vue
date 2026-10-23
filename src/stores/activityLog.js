@@ -1,7 +1,6 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
-import { useToast } from 'vue-toastification';
 
 export const useActivityLogStore = defineStore('activityLog', () => {
     // state
@@ -9,19 +8,24 @@ export const useActivityLogStore = defineStore('activityLog', () => {
     const logs = ref([]);
 
     // getters
-    const toast = useToast();
 
     // actions
     async function fetchData() {
-        if (!logs.value.length) loading.value = true;
-        const { data, error } = await supabase.from('activity_log').select('*');
-        loading.value = false;
-
-        if (error) {
-            toast.error(error.message);
-            throw error;
+        if (!logs.value.length) {
+            loading.value = true;
         }
-        logs.value = data;
+        try {
+            const { data, error } = await supabase.from('activity_log').select('*');
+
+            if (error) {
+                throw error;
+            }
+            logs.value = data;
+        } catch (err) {
+            throw err;
+        } finally {
+            loading.value = false;
+        }
     }
 
     return {
