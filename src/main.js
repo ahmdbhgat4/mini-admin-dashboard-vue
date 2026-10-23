@@ -1,40 +1,36 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createPersistedState } from 'pinia-plugin-persistedstate';
-import Toast, { POSITION } from 'vue-toastification';
-import { createI18n } from 'vue-i18n';
 import App from '@/App.vue';
 import router from '@/router';
 import VueAwesomePaginate from 'vue-awesome-paginate';
-import { en, ar } from '@/locales';
 import Skeleton from '@brayamvalero/vue3-skeleton';
-// import Sentry from '@/utils/error/tracking';
-import ErrorHandler from '@/utils/error/handler';
+// import Sentry from '@/utils/error-tracking';
 // import { createSentryPiniaPlugin } from '@sentry/vue';
+import customErrorHandler from '@/utils/error-handler';
+import ToastPlugin from '@erag/vue-toastification';
+import i18n from '@/utils/i18n';
 // styles
 import '@brayamvalero/vue3-skeleton/dist/style.css';
-import 'vue-toastification/dist/index.css';
 import '@/index.css';
+import '@erag/vue-toastification/dist/style.css';
 
 const app = createApp(App);
 const pinia = createPinia();
-const i18n = createI18n({ legacy: false, locale: 'en', fallbackLocale: 'en', messages: { en, ar } });
 
 pinia.use(createPersistedState({ key: id => `__persisted__${id}` }));
-// pinia.use(createSentryPiniaPlugin());
 
 app.config.errorHandler = (err, instance, info) => {
-    ErrorHandler(err, instance, info);
+    customErrorHandler(err, instance, info);
 };
 
+// pinia.use(createSentryPiniaPlugin());
 // Sentry.addIntegration(Sentry.vueIntegration({ app }));
 
 app.use(pinia)
     .use(router)
     .use(i18n)
-    .use(Toast, {
-        position: POSITION.BOTTOM_CENTER,
-    })
+    .use(ToastPlugin, { position: 'bottom-right' })
     .use(VueAwesomePaginate)
     .use(Skeleton);
 

@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useNotificationsStore } from '@/stores/notifications';
 import { supabase } from '@/utils/supabase';
-import { useToast } from 'vue-toastification';
+import { useToast } from '@erag/vue-toastification';
 import { useI18n } from 'vue-i18n';
 
 export const useUsersStore = defineStore(
@@ -48,7 +48,7 @@ export const useUsersStore = defineStore(
                 if (error) {
                     throw error;
                 }
-                toast.success(t('user_add_success'));
+                toast.success(t('user_add_success'), t('success'));
                 updateModalIsActive.value = false;
                 await fetchUsers();
             } catch (err) {
@@ -80,7 +80,7 @@ export const useUsersStore = defineStore(
                     throw new Error(t('updated_nothing'));
                 }
 
-                toast.success(t('user_update_success'));
+                toast.success(t('user_update_success'), t('success'));
                 notificationsStore.push(`${data.name}'s profile was updated!`);
                 updateModalIsActive.value = false;
                 await fetchUsers();
@@ -103,7 +103,7 @@ export const useUsersStore = defineStore(
                     throw new Error(t('deleted_nothing'));
                 }
 
-                toast.success(t('user_delete_success'));
+                toast.success(t('user_delete_success'), t('success'));
                 // console.log('deleted: ', { data });
                 // notificationsStore.push(`${data.name}'s profile was deleted!`);
                 deleteModalIsActive.value = false;

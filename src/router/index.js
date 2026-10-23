@@ -37,16 +37,11 @@ const router = createRouter({
 });
 
 // navigation guards
-router.beforeEach((to, from) => {
+router.beforeEach(async to => {
     const authStore = useAuthStore();
 
     if (authStore.loggedIn) {
         // authenticated (user)
-        // if (from.query.redirect) {
-        //     // handle redirect
-        //     return { name: from.query.redirect };
-        // }
-
         if (to.meta.requiresGuest) {
             // at auth page (go to dashboard)
             return { name: 'dashboard' };

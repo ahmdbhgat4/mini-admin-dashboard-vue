@@ -91,4 +91,11 @@ export const en = {
     user_delete_success: 'User deleted successfully',
     updated_nothing: 'Nothing was updated. Check the row id and your update policy',
     deleted_nothing: 'Nothing was deleted. Check the row id and your delete policy',
+    updated: 'Updated',
+    deleted: 'Deleted',
+    added: 'Added',
+    success: 'Success',
+    error: 'Error',
+    warning: 'Warning',
+    info: 'Info',
 };

@@ -6,6 +6,7 @@ export const useGlobalStore = defineStore('global', () => {
     // state
     const loading = ref(false);
     const globalData = ref({
+        site_name: 'Pulse.',
         languages: [],
         signups: null,
         recent_activity: [],

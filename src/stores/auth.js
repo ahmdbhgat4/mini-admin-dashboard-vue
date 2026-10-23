@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
-import { useToast } from 'vue-toastification';
+import { useToast } from '@erag/vue-toastification';
 import { useI18n } from 'vue-i18n';
 
 export const useAuthStore = defineStore(
@@ -35,7 +35,7 @@ export const useAuthStore = defineStore(
                 if (error) {
                     throw error;
                 }
-                toast.success(t('login_success'));
+                toast.success(t('login_success'), t('success'));
                 formData.value.email = '';
                 formData.value.password = '';
             } catch (err) {
@@ -60,7 +60,7 @@ export const useAuthStore = defineStore(
                 if (error) {
                     throw error;
                 }
-                toast.success(t('profile_update_success'));
+                toast.success(t('profile_update_success'), t('success'));
             } catch (err) {
                 throw err;
             } finally {
@@ -75,7 +75,7 @@ export const useAuthStore = defineStore(
                 if (error) {
                     throw error;
                 }
-                toast.success(t('logout_success'));
+                toast.success(t('logout_success'), t('success'));
             } catch (err) {
                 throw err;
             } finally {

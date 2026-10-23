@@ -1,33 +1,43 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
+import { useGlobalStore } from '@/stores/global';
+import { useNotificationsStore } from '@/stores/notifications';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
 const authStore = useAuthStore();
+const notificationsStore = useNotificationsStore();
+const globalStore = useGlobalStore();
 </script>
 
 <template>
     <aside class="side">
-        <div class="logo">Pulse<b>.</b></div>
+        <div class="logo">{{ globalStore.globalData.site_name }}</div>
+
         <nav class="nav" aria-label="Main">
-            <RouterLink :to="{ name: 'dashboard' }">{{ t('n_dash') }}</RouterLink>
+            <RouterLink :to="{ name: 'dashboard' }">
+                <span>{{ t('n_dash') }}</span>
+            </RouterLink>
             <RouterLink :to="{ name: 'users' }" :class="{ 'no-drop': authStore.user.role !== 'admin' }">
                 <span>{{ t('n_users') }}</span>
                 <span v-show="authStore.user.role !== 'admin'" class="lock">{{ t('admin') }}</span>
             </RouterLink>
             <RouterLink :to="{ name: 'reports' }">
-                {{ t('n_reports') }}
+                <span>{{ t('n_reports') }}</span>
             </RouterLink>
             <RouterLink :to="{ name: 'notifications' }">
-                {{ t('n_notifs') }}
+                <span>{{ t('n_notifs') }}</span>
+                <span v-show="notificationsStore.unreadCount" class="lock accent">
+                    {{ notificationsStore.unreadCount }}
+                </span>
             </RouterLink>
             <RouterLink :to="{ name: 'activity-log' }" :class="{ 'no-drop': authStore.user.role !== 'admin' }">
                 <span>{{ t('n_log') }}</span>
                 <span v-show="authStore.user.role !== 'admin'" class="lock">{{ t('admin') }}</span>
             </RouterLink>
             <RouterLink :to="{ name: 'settings' }">
-                {{ t('n_settings') }}
+                <span>{{ t('n_settings') }}</span>
             </RouterLink>
         </nav>
 

@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { supabase } from '@/utils/supabase';
+import { useToast } from '@erag/vue-toastification';
 
 export const useNotificationsStore = defineStore('notifications', () => {
     // state
@@ -18,6 +19,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
 
     // getters
     const authStore = useAuthStore();
+    const toast = useToast();
 
     // actions
     async function subscribe() {
@@ -109,7 +111,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     async function _handleChanges(payload = {}) {
         const { eventType, new: _new, old: _old } = payload;
 
-        // toast.info(_new.content);
+        toast.info(_new.content, t('info'));
 
         let _list = [...list.value];
         let _total = total.value;

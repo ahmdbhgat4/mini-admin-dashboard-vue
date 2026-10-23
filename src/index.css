@@ -131,6 +131,13 @@ select {
     background: rgba(255, 255, 255, 0.12);
     padding: 0.05rem 0.45rem;
     border-radius: 1rem;
+    --size: 20px;
+    min-width: var(--size);
+    min-height: var(--size);
+}
+.lock.accent {
+    background-color: var(--accent);
+    color: var(--accent-ink);
 }
 .no-drop {
     cursor: no-drop;
