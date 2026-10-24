@@ -1,8 +1,8 @@
 <script setup>
 import { useNotificationsStore } from '@/stores/notifications';
 import { formatDistanceToNow } from 'date-fns';
+import { onBeforeMount, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-// import { formatDistanceToNow } from '@/utils/date';
 
 const { t } = useI18n();
 const notificationsStore = useNotificationsStore();
@@ -20,11 +20,22 @@ const markAllAsRead = async () => {
     } catch (err) {
         // roll back if it failed
         notificationsStore.list = previous;
-        console.error(err);
+        throw err;
     }
 };
 
 const formatDate = (date = '') => formatDistanceToNow(new Date(date));
+
+onBeforeMount(() => {
+    notificationsStore.currentPage = 1;
+});
+
+watch(
+    () => notificationsStore.currentPage,
+    async () => {
+        await notificationsStore.fetchNotifications();
+    },
+);
 </script>
 
 <template>
@@ -73,7 +84,6 @@ const formatDate = (date = '') => formatDistanceToNow(new Date(date));
                     :items-per-page="notificationsStore.pageSize"
                     :max-pages-shown="5"
                     v-model="notificationsStore.currentPage"
-                    @click="notificationsStore.fetchNotifications"
                 />
 
                 <span class="muted">

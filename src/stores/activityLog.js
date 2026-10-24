@@ -5,13 +5,13 @@ import { supabase } from '@/utils/supabase';
 export const useActivityLogStore = defineStore('activityLog', () => {
     // state
     const loading = ref(false);
-    const logs = ref([]);
+    const list = ref([]);
 
     // getters
 
     // actions
     async function fetchData() {
-        if (!logs.value.length) {
+        if (!list.value.length) {
             loading.value = true;
         }
         try {
@@ -20,7 +20,7 @@ export const useActivityLogStore = defineStore('activityLog', () => {
             if (error) {
                 throw error;
             }
-            logs.value = data;
+            list.value = data;
         } catch (err) {
             throw err;
         } finally {
@@ -30,7 +30,7 @@ export const useActivityLogStore = defineStore('activityLog', () => {
 
     return {
         loading,
-        logs,
+        list,
 
         fetchData,
     };

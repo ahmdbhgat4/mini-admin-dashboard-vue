@@ -98,4 +98,11 @@ export const en = {
     error: 'Error',
     warning: 'Warning',
     info: 'Info',
+    action_cancelled: 'Action cancelled',
+    delete_confirm_user: {
+        title: 'Delete user?',
+        message: 'Are you sure? This action cannot be undone.',
+        confirm: 'Yes, Delete',
+        cancel: 'No, Keep it',
+    },
 };

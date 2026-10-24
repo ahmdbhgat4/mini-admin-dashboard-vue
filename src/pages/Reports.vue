@@ -33,8 +33,8 @@ onMounted(async () => {
                         </tr>
                     </tbody>
 
-                    <tbody v-else>
-                        <tr v-for="obj in reportsStore.reports">
+                    <tbody v-else-if="reportsStore.list.length">
+                        <tr v-for="obj in reportsStore.list">
                             <td>{{ obj.title }}</td>
                             <td>{{ obj.period }}</td>
                             <td>{{ obj.format }}</td>
@@ -46,6 +46,10 @@ onMounted(async () => {
                         </tr>
                     </tbody>
                 </table>
+
+                <div v-if="!reportsStore.loading && !reportsStore.list.length" class="empty-text">
+                    {{ t('empty_results') }}
+                </div>
             </div>
         </div>
     </section>

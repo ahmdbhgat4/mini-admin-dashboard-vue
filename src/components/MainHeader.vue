@@ -53,10 +53,6 @@ const changeLocale = (code = '') => {
     settingsStore.changeLocale(lang);
 };
 
-const handleError = () => {
-    throw new Error('Some kind of error.');
-};
-
 watch(showNotifications, (show = false) => {
     if (show) {
         // notificationsStore.markAllAsRead();
@@ -115,7 +111,6 @@ watch(showNotifications, (show = false) => {
                 <small id="urole">{{ t(authStore.user.role || 'member') }}</small>
             </div>
 
-            <!-- handleError || authStore.logout -->
             <button class="btn in" @click.prevent="authStore.logout" :aria-label="t('logout')" :title="t('logout')">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -155,7 +150,11 @@ watch(showNotifications, (show = false) => {
                     </div>
                 </li>
             </ul>
-            <div v-else class="">{{ t('notif_empty') }}</div>
+            <ul v-else class="">
+                <li class="rd muted text-center">
+                    {{ t('notif_empty') }}
+                </li>
+            </ul>
         </div>
     </header>
 </template>

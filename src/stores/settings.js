@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { useGlobalStore } from '@/stores/global';
 import { setDefaultOptions } from 'date-fns';
-import { importDateLocaleModules } from '@/utils/date';
+import { importDateLocaleModules } from '@/utils/date-locale';
 
 export const useSettingsStore = defineStore(
     'settings',

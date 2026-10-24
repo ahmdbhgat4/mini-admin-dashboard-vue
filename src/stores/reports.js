@@ -5,13 +5,13 @@ import { supabase } from '@/utils/supabase';
 export const useReportsStore = defineStore('reports', () => {
     // state
     const loading = ref(false);
-    const reports = ref([]);
+    const list = ref([]);
 
     // getters
 
     // actions
     async function fetchData() {
-        if (!reports.value.length) {
+        if (!list.value.length) {
             loading.value = true;
         }
         try {
@@ -19,7 +19,7 @@ export const useReportsStore = defineStore('reports', () => {
             if (error) {
                 throw error;
             }
-            reports.value = data;
+            list.value = data;
         } catch (err) {
             throw err;
         } finally {
@@ -29,7 +29,7 @@ export const useReportsStore = defineStore('reports', () => {
 
     return {
         loading,
-        reports,
+        list,
 
         fetchData,
     };

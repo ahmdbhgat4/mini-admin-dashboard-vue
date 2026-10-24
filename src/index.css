@@ -277,6 +277,9 @@ select {
 .pop li.un {
     background: var(--bg);
 }
+.pop li.text-center {
+    justify-content: center;
+}
 .pop li.unset {
     margin: 0;
     padding: 0;
@@ -744,6 +747,49 @@ tr:last-child td {
 .pagination-wrapper .muted {
     color: var(--muted);
     font-size: 0.88rem;
+}
+.muted {
+    color: var(--muted);
+    /* font-size: 0.88rem; */
+}
+
+/* toast | modal */
+.erag-toast-container {
+}
+.erag-modal-backdrop {
+}
+.erag-modal-container {
+    --modal-bg: var(--bg);
+    --modal-ink: var(--ink);
+
+    background-color: var(--modal-bg) !important;
+    color: var(--modal-ink) !important;
+}
+.erag-modal-body {
+}
+.erag-modal-icon-wrapper {
+}
+.erag-modal-text {
+}
+
+.erag-modal-text .erag-modal-title {
+    color: inherit !important;
+}
+.erag-modal-text .erag-modal-message {
+    color: var(--muted) !important;
+}
+.erag-modal-footer {
+    background-color: var(--modal-bg) !important;
+    color: var(--modal-ink) !important;
+}
+.erag-btn {
+}
+.erag-btn.erag-btn-confirm {
+}
+.erag-btn.erag-btn-cancel {
+    background-color: var(--modal-bg) !important;
+    border-color: var(--modal-ink) !important;
+    color: var(--modal-ink) !important;
 }
 
 @media (max-width: 860px) {

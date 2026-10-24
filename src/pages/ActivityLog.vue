@@ -11,8 +11,8 @@ const formatDate = (date = '') => {
     return formatDistanceToNow(new Date(date));
 };
 
-onMounted(() => {
-    logStore.fetchData();
+onMounted(async () => {
+    await logStore.fetchData();
 });
 </script>
 
@@ -36,14 +36,18 @@ onMounted(() => {
                         </tr>
                     </tbody>
 
-                    <tbody v-else>
-                        <tr v-for="obj in logStore.logs" :key="obj.id">
+                    <tbody v-else-if="logStore.list.length">
+                        <tr v-for="obj in logStore.list" :key="obj.id">
                             <td>{{ obj.provider_name }}</td>
                             <td>{{ obj.title }}</td>
                             <td>{{ formatDate(obj.created_at) }}</td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div v-if="!logStore.loading && !logStore.list.length" class="empty-text">
+                    {{ t('empty_results') }}
+                </div>
             </div>
         </div>
     </section>

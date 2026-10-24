@@ -1,7 +1,6 @@
 <script setup>
 import { watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ModalDelete from '@/components/ModalDelete.vue';
 import ModalEdit from '@/components/ModalEdit.vue';
 import { useUsersStore } from '@/stores/users';
 import UsersForm from '@/components/UsersForm.vue';
@@ -49,5 +48,4 @@ watch(
     </section>
 
     <ModalEdit />
-    <ModalDelete />
 </template>

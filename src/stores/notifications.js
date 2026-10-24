@@ -49,7 +49,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
                         break;
                     case 'CHANNEL_ERROR':
                     case 'TIMED_OUT':
-                        console.error('Realtime problem:', status);
+                        throw new Error('Realtime problem:' + status);
                         break;
                     default:
                         break;

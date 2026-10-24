@@ -98,4 +98,11 @@ export const ar = {
     error: 'خطأ',
     warning: 'تحذير',
     info: 'معلومة',
+    action_cancelled: 'تم إلغاء الإجراء',
+    delete_confirm_user: {
+        title: 'حذف المستخدم؟',
+        message: 'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.',
+        confirm: 'نعم، احذف',
+        cancel: 'لا، احتفظ به',
+    },
 };

@@ -1,21 +1,37 @@
 <script setup>
 import { useUsersStore } from '@/stores/users';
+import { useConfirmation, useToast } from '@erag/vue-toastification';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 const usersStore = useUsersStore();
+const modal = useConfirmation();
+const toast = useToast();
 
 const handleEdit = (obj = '') => {
     usersStore.formData = { ...obj };
     usersStore.updateModalIsActive = true;
 };
 
-const prepareDelete = (id = '') => {
-    usersStore.formData.id = id;
+const prepareDelete = async (id = '') => {
     usersStore.deleteModalIsActive = true;
-};
 
-const handlePaginate = () => {};
+    const isConfirmed = await modal.confirm({
+        title: t('delete_confirm_user.title'),
+        message: t('delete_confirm_user.message'),
+        confirmText: t('delete_confirm_user.confirm'),
+        cancelText: t('delete_confirm_user.cancel'),
+        type: 'danger',
+    });
+
+    if (isConfirmed) {
+        usersStore.formData.id = id;
+        await usersStore.deleteUser();
+    } else {
+        // User clicked "No" or Cancel
+        toast.info(t('action_cancelled'), t('info'));
+    }
+};
 </script>
 
 <template>
@@ -62,7 +78,6 @@ const handlePaginate = () => {};
 
         <div v-if="!usersStore.loading && !usersStore.list.length" class="empty-text">
             {{ t('empty_results') }}
-            <!-- <button class="btn in">{{ t('reset_filters') }}</button> -->
         </div>
 
         <ul v-if="usersStore.loading" class="pagination-container">
@@ -70,6 +85,7 @@ const handlePaginate = () => {};
                 <Skeleton class="paginate-buttons number-buttons"></Skeleton>
             </li>
         </ul>
+
         <div v-else class="pagination-wrapper">
             <vue-awesome-paginate
                 :total-items="usersStore.total"
