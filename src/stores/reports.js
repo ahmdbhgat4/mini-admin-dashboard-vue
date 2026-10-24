@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import { useI18n } from 'vue-i18n';
 
 export const useReportsStore = defineStore('reports', () => {
     // state
@@ -8,6 +9,7 @@ export const useReportsStore = defineStore('reports', () => {
     const list = ref([]);
 
     // getters
+    const { locale } = useI18n();
 
     // actions
     async function fetchData() {
@@ -15,7 +17,7 @@ export const useReportsStore = defineStore('reports', () => {
             loading.value = true;
         }
         try {
-            const { data, error } = await supabase.from('reports').select('*');
+            const { data, error } = await supabase.from('reports').select('*').setHeader('lang', locale.value);
             if (error) {
                 throw error;
             }

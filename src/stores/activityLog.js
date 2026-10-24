@@ -1,6 +1,8 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import { useSettingsStore } from '@/stores/settings';
+import { useI18n } from 'vue-i18n';
 
 export const useActivityLogStore = defineStore('activityLog', () => {
     // state
@@ -8,6 +10,8 @@ export const useActivityLogStore = defineStore('activityLog', () => {
     const list = ref([]);
 
     // getters
+    const settingsStore = useSettingsStore();
+    const { locale } = useI18n();
 
     // actions
     async function fetchData() {
@@ -15,7 +19,7 @@ export const useActivityLogStore = defineStore('activityLog', () => {
             loading.value = true;
         }
         try {
-            const { data, error } = await supabase.from('activity_log').select('*');
+            const { data, error } = await supabase.from('activity_log').select('*').setHeader('lang', locale.value);
 
             if (error) {
                 throw error;

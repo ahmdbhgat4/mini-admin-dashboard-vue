@@ -24,7 +24,7 @@ export const useUsersStore = defineStore(
         // getters
         const notificationsStore = useNotificationsStore();
         const toast = useToast();
-        const { t } = useI18n();
+        const { t, locale } = useI18n();
 
         // actions
         async function addUser() {
@@ -43,7 +43,8 @@ export const useUsersStore = defineStore(
                         updated_at: new Date().toISOString(),
                     })
                     .select()
-                    .single();
+                    .single()
+                    .setHeader('lang', locale.value);
 
                 if (error) {
                     throw error;
@@ -71,7 +72,8 @@ export const useUsersStore = defineStore(
                     .update({ ...formData.value, updated_at: new Date().toISOString() })
                     .eq('id', formData.value.id)
                     .select()
-                    .maybeSingle();
+                    .maybeSingle()
+                    .setHeader('lang', locale.value);
 
                 if (error) {
                     throw error;
@@ -94,7 +96,12 @@ export const useUsersStore = defineStore(
         async function deleteUser() {
             loading.value = true;
             try {
-                const { data, error } = await supabase.from('profiles').delete().eq('id', formData.value.id).select();
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .delete()
+                    .eq('id', formData.value.id)
+                    .select()
+                    .setHeader('lang', locale.value);
 
                 if (error) {
                     throw error;
@@ -128,7 +135,8 @@ export const useUsersStore = defineStore(
                 .select('id, name, email, role, status, created_at, updated_at', { count: 'exact' })
                 .order('created_at', { ascending: false })
                 .range(from, to)
-                .abortSignal(abortController.value.signal);
+                .abortSignal(abortController.value.signal)
+                .setHeader('lang', locale.value);
 
             // add filters only when they have a value
             if (searchForm.value.role) {

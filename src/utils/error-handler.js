@@ -5,7 +5,7 @@ export default function (err, instance, info) {
     // info :string = 'native event handler', 'watcher callback', 'mounted hook'
     const toast = useToast(); // [status](message: string, title?: string, duration?: number, position?: ToastPosition)
     const { t } = i18n.global;
-    console.log({ err }, info);
+    // console.log({ err }, info);
 
     let message = ''; // :string
 

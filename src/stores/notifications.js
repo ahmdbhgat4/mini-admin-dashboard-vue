@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import { supabase } from '@/utils/supabase';
 import { useToast } from '@erag/vue-toastification';
+import { useI18n } from 'vue-i18n';
 
 export const useNotificationsStore = defineStore('notifications', () => {
     // state
@@ -20,6 +21,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     // getters
     const authStore = useAuthStore();
     const toast = useToast();
+    const { locale } = useI18n();
 
     // actions
     async function subscribe() {
@@ -64,7 +66,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
                 .from('notifications')
                 .select('is_read', { count: 'exact' })
                 .eq('user_id', authStore.user.id)
-                .eq('is_read', false);
+                .eq('is_read', false)
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;
@@ -95,7 +98,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
                 .eq('user_id', authStore.user.id)
                 .order('created_at', { ascending: false })
                 .range(from, to)
-                .abortSignal(abortController.value.signal);
+                .abortSignal(abortController.value.signal)
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;
@@ -181,7 +185,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
                 })
                 .select()
                 .single()
-                .abortSignal(abortController.value.signal);
+                .abortSignal(abortController.value.signal)
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;
@@ -204,7 +209,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
                 .eq('is_read', false)
                 .eq('id', notificationId)
                 .select('id')
-                .abortSignal(abortController.value.signal);
+                .abortSignal(abortController.value.signal)
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;
@@ -231,7 +237,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
                 .eq('user_id', authStore.user.id)
                 .eq('is_read', false)
                 .select('id')
-                .abortSignal(abortController.value.signal);
+                .abortSignal(abortController.value.signal)
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;

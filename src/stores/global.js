@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { supabase } from '@/utils/supabase';
+import { useI18n } from 'vue-i18n';
 
 export const useGlobalStore = defineStore('global', () => {
     // state
@@ -14,6 +15,7 @@ export const useGlobalStore = defineStore('global', () => {
     });
 
     // getters
+    const { locale } = useI18n();
 
     // actions
     async function fetchData() {
@@ -21,12 +23,15 @@ export const useGlobalStore = defineStore('global', () => {
         try {
             const { data, error } = await supabase
                 .from('global_info')
-                .select('languages, signups, recent_activity, stats');
+                .select('languages, signups, recent_activity, stats')
+                .limit(1)
+                .single()
+                .setHeader('lang', locale.value);
 
             if (error) {
                 throw error;
             }
-            const { languages, signups, recent_activity, stats } = data[0];
+            const { languages, signups, recent_activity, stats } = data;
             globalData.value.languages = languages;
             globalData.value.signups = signups;
             globalData.value.recent_activity = recent_activity;

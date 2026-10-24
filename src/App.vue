@@ -23,18 +23,18 @@ supabase.auth.onAuthStateChange(async (state = '') => {
 
     switch (state) {
         case 'SIGNED_IN':
+            authStore.loggedIn = true;
             if (!notificationsStore.unsubscribe) {
                 notificationsStore.subscribe();
             }
-            authStore.loggedIn = true;
             if (router.currentRoute.value.name === 'auth-login') {
                 const redirect = router.currentRoute.value.query.redirect;
                 router.push({ name: redirect || 'dashboard' });
             }
             break;
         case 'SIGNED_OUT':
-            notificationsStore.unsubscribe?.();
             authStore.loggedIn = false;
+            notificationsStore.unsubscribe?.();
             if (router.currentRoute.value.name !== 'auth-login') {
                 router.push({ name: 'auth-login' });
             }
@@ -49,11 +49,11 @@ supabase.auth.onAuthStateChange(async (state = '') => {
 });
 
 onMounted(async () => {
-    globalStore.fetchData();
+    await globalStore.fetchData();
 });
 
-onUnmounted(() => {
-    notificationsStore.unsubscribe?.();
+onUnmounted(async () => {
+    await notificationsStore.unsubscribe?.();
 });
 
 watch(
